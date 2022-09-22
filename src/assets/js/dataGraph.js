@@ -83,7 +83,11 @@ const selectElement = (element) => {
 
 // DOM selectors
 const balance = selectElement("#solde");
+const balanceFace = selectElement("#balance-face");
+
 const operationForm = selectElement("#operationForm");
+const inputs = document.querySelectorAll("#operationForm input");
+console.log(inputs);
 const operationTypeSelector = selectElement("#operator");
 const operationTitle = selectElement("#titre");
 const operationDescription = selectElement("#desc");
@@ -174,6 +178,29 @@ operationForm.addEventListener("submit", (e) => {
   let updatedBalance = balanceArray[balanceArray.length - 1].toFixed(2);
   let formatedBalance = addSpaceInNumber(updatedBalance);
   balance.innerHTML = `${formatedBalance}€`;
+
+  // dynamic update of balance face
+  if (updatedBalance >= 500) {
+    balanceFace.innerHTML = "on est bien 😃";
+    balanceFace.classList.add("good");
+    balanceFace.classList.remove("bad");
+  } else if (updatedBalance < 500 && updatedBalance > 50) {
+    balanceFace.innerHTML = "ça devient chaud 😬";
+    balanceFace.classList.add("good");
+    balanceFace.classList.remove("bad");
+  } else {
+    balanceFace.innerHTML = "c'est la cata 😱";
+    balanceFace.classList.add("bad");
+    balanceFace.classList.remove("good");
+  }
+
+  // clear inputs
+  operationTypeSelector.value = "--";
+
+  inputs.forEach((input) => {
+    console.log(input);
+    input.value = "";
+  });
 });
 
 // ******************** CREDIT / DEBIT FILTER ********************
