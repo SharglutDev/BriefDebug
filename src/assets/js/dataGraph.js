@@ -74,21 +74,22 @@ function addTemperature(time, temperature) {
   chart.update();
 }
 
-/************ FORM VALIDATION LOGIC ***********/
+/************************ FORM VALIDATION  ************************/
 
+// create a custom DOM selector function for DRY (is it usefull ?)
 const selectElement = (element) => {
   return document.querySelector(`${element}`);
 };
+
+// DOM selectors
 const balance = selectElement("#solde");
 const operationForm = selectElement("#operationForm");
 const operationTypeSelector = selectElement("#operator");
 const operationTitle = selectElement("#titre");
 const operationDescription = selectElement("#desc");
 const operationAmount = selectElement("#montant");
-// const formSubmit = selectElement(".btSubmit");
 
 const gridOperationContainer = document.querySelectorAll(".grid-container")[1];
-// const operationBlock = selectElement(".operation");
 
 // format number to 1 000 instead 1000
 const addSpaceInNumber = (num) => {
@@ -98,9 +99,9 @@ const addSpaceInNumber = (num) => {
 operationForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  let updatedBalance = balanceArray[balanceArray.length - 1].toFixed(2);
-  let formatedBalance = addSpaceInNumber(updatedBalance);
-  balance.innerHTML = `${formatedBalance}€`;
+  //// DOM creation of the whole HTML operation blocks with dynamic values \\\\
+
+  // TODO : try to shorten the code with element.clodeNode() ?
 
   const mainDiv = document.createElement("div");
   gridOperationContainer.appendChild(mainDiv);
@@ -108,15 +109,19 @@ operationForm.addEventListener("submit", (e) => {
     "operation",
     `${operationTypeSelector.value === "credit" ? "credit" : "debit"}`
   );
+
   const gridDiv = document.createElement("div");
   mainDiv.appendChild(gridDiv);
   gridDiv.classList.add("grid-x", "grid-padding-x", "align-middle");
+
   const pictoCell = document.createElement("div");
   gridDiv.appendChild(pictoCell);
   pictoCell.classList.add("cell", "shrink");
+
   const pictoDiv = document.createElement("div");
   pictoCell.appendChild(pictoDiv);
   pictoDiv.classList.add("picto");
+
   const pictoImg = document.createElement("img");
   pictoDiv.appendChild(pictoImg);
   pictoImg.src =
@@ -127,31 +132,36 @@ operationForm.addEventListener("submit", (e) => {
     "alt",
     `${operationTypeSelector.value === "credit" ? "credit" : "debit"}`
   );
+
   const infoCell = document.createElement("div");
   gridDiv.appendChild(infoCell);
   infoCell.classList.add("cell", "auto");
+
   const infoTitle = document.createElement("h2");
   infoCell.appendChild(infoTitle);
   infoTitle.innerHTML = `${operationTitle.value}`;
+
   const infoSpan = document.createElement("small");
   infoCell.appendChild(infoSpan);
   infoSpan.innerHTML = `${operationDescription.value}`;
+
   const amountCell = document.createElement("div");
   gridDiv.appendChild(amountCell);
   amountCell.classList.add("cell", "small-3", "text-right");
+
   const amountValue = document.createElement("p");
   amountCell.appendChild(amountValue);
   amountValue.classList.add("count");
   amountValue.innerHTML = `${addSpaceInNumber(operationAmount.value)}€`;
+
   let amountPercent = document.createElement("small");
   amountCell.appendChild(amountPercent);
-  console.log(operationAmount.value);
-  console.log(balanceArray[balanceArray.length - 1]);
   amountPercent.innerHTML = `${(
     (parseInt(operationAmount.value) / balanceArray[balanceArray.length - 1]) *
     100
   ).toFixed(2)}%`;
 
+  // update the balance array for graphic use
   operationTypeSelector.value === "credit"
     ? balanceArray.push(
         balanceArray[balanceArray.length - 1] + parseInt(operationAmount.value)
@@ -159,4 +169,59 @@ operationForm.addEventListener("submit", (e) => {
     : balanceArray.push(
         balanceArray[balanceArray.length - 1] - parseInt(operationAmount.value)
       );
+
+  // dynamic update of current balance
+  let updatedBalance = balanceArray[balanceArray.length - 1].toFixed(2);
+  let formatedBalance = addSpaceInNumber(updatedBalance);
+  balance.innerHTML = `${formatedBalance}€`;
+});
+
+// ******************** CREDIT / DEBIT FILTER ********************
+
+const allFilterBtns = document.querySelectorAll(".navHeader a");
+const allOpBtn = selectElement(".all-operations");
+const debitBtn = selectElement(".debit");
+const creditBtn = selectElement(".credit");
+
+debitBtn.addEventListener("click", () => {
+  const selectAllOperations = document.querySelectorAll(".operation");
+
+  allFilterBtns.forEach((filterBtn) => {
+    filterBtn.classList.value.includes("debit")
+      ? filterBtn.classList.add("active")
+      : filterBtn.classList.remove("active");
+  });
+  selectAllOperations.forEach((operation) => {
+    operation.classList.value.includes("debit")
+      ? operation.classList.remove("disabled")
+      : operation.classList.add("disabled");
+  });
+});
+
+creditBtn.addEventListener("click", () => {
+  const selectAllOperations = document.querySelectorAll(".operation");
+
+  allFilterBtns.forEach((filterBtn) => {
+    filterBtn.classList.value.includes("credit")
+      ? filterBtn.classList.add("active")
+      : filterBtn.classList.remove("active");
+  });
+  selectAllOperations.forEach((operation) => {
+    operation.classList.value.includes("credit")
+      ? operation.classList.remove("disabled")
+      : operation.classList.add("disabled");
+  });
+});
+
+allOpBtn.addEventListener("click", () => {
+  const selectAllOperations = document.querySelectorAll(".operation");
+
+  allFilterBtns.forEach((filterBtn) => {
+    filterBtn.classList.value.includes("all-operations")
+      ? filterBtn.classList.add("active")
+      : filterBtn.classList.remove("active");
+  });
+  selectAllOperations.forEach((operation) => {
+    operation.classList.remove("disabled");
+  });
 });

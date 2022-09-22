@@ -102,3 +102,7 @@ header {
   cursor: pointer;
   transform: scale(1.1);
 }
+
+.disabled {
+  display: none;
+}
