@@ -12,7 +12,7 @@ const data = {
       label: "Compte",
       data: datapoints,
       borderColor: "purple",
-      //   fill: true,
+      // fill: true,
       cubicInterpolationMode: "monotone",
     },
   ],
@@ -72,3 +72,37 @@ function addTemperature(time, temperature) {
   /* Rafraichir le graphique */
   chart.update();
 }
+
+/************ FORM VALIDATION LOGIC ***********/
+
+const selectElement = (element) => {
+  return document.querySelector(`${element}`);
+};
+const operationForm = selectElement("#operationForm");
+const operationTypeSelector = selectElement("#operator");
+const operationTitle = selectElement("#titre");
+const operationDescription = selectElement("#desc");
+const operationAmount = selectElement("#montant");
+const formSubmit = selectElement(".btSubmit");
+
+const gridOperationContainer = selectElement(".grid-container");
+const operationBlock = selectElement(".operation");
+
+operationForm.addEventListener("submit", (e) => {
+  // const mainDiv = document.createElement('div')
+  // mainDiv.classList.add("operation", "credit")
+  // const gridDiv = document.createElement("div").appendChild(mainDiv)
+  // gridDiv.classList.add("grid-x", "grid-padding-x", "align-middle");
+  // const cellDiv = document.createElement("div").appendChild(gridDiv)
+  // cellDiv.classList.add("cell", "shrink");
+  // const pictoDiv = document.createElement("div")
+  e.preventDefault();
+  const newOperationBlock = gridOperationContainer.appendChild(
+    operationBlock.cloneNode()
+  );
+  console.log(newOperationBlock);
+});
+const newOperationBlock = gridOperationContainer.appendChild(
+  operationBlock.cloneNode()
+);
+console.log(gridOperationContainer);
