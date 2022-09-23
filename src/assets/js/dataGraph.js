@@ -1,16 +1,16 @@
 // <block:setup:1>
 const balanceArray = [1200, 750, 775, 760, 2560]; // old const datapoints
-const DATA_COUNT = balanceArray.length + 2; // old const datapoints
+const DATA_COUNT = balanceArray.length; // old const datapoints / retrait du +2
 // TODO dynamic length calcul
 const labels = [];
-for (let i = 0; i < DATA_COUNT; ++i) {
+for (let i = 0; i < DATA_COUNT; i++) {
   labels.push(i.toString());
 }
 const data = {
   labels: labels,
   datasets: [
     {
-      label: "Compte",
+      label: "Compte", // old : Compte
       data: balanceArray, // old : datapoints
       borderColor: "purple",
       // fill: true,
@@ -53,26 +53,32 @@ const config = {
 };
 
 /*Le contexte du canevas HTML */
-context = document.getElementById("myChart").getContext("2d");
+const context = document.getElementById("myChart").getContext("2d");
 /* Création du graphique */
-chart = new Chart(context, config);
+const chart = new Chart(context, config);
 
 /* Générer des données aléatoires */
 function generateData() {
-  randomTemperature = (Math.random() * Math.floor(50)).toFixed(2); // Deux chiffres après la virgule
-  addTemperature(new Date().toLocaleTimeString(), randomTemperature);
+  randomNewSold = (Math.random() * Math.floor(2500)).toFixed(2); // Deux chiffres après la virgule
+  let getLastLabel = data.labels[data.labels.length - 1];
+  let getOperationNumber = (parseInt(getLastLabel) + 1).toString(); // increment 1 to last operation value and transform it back to string
+  addSold(getOperationNumber, randomNewSold);
 }
 
-function addTemperature(time, temperature) {
+function addSold(operationNumber, newSold) {
   /* Ajoute la valeur en X */
-  config.data.labels.push(time);
+  config.data.labels.push(operationNumber);
 
   /* Ajoute la valeur */
-  config.data.datasets[0].data.push(temperature);
+  config.data.datasets[0].data.push(newSold);
 
   /* Rafraichir le graphique */
   chart.update();
 }
+
+// generateData();
+// generateData();
+// generateData();
 
 /************************ FORM VALIDATION  ************************/
 
@@ -87,7 +93,7 @@ const balanceFace = selectElement("#balance-face");
 
 const operationForm = selectElement("#operationForm");
 const inputs = document.querySelectorAll("#operationForm input");
-console.log(inputs);
+
 const operationTypeSelector = selectElement("#operator");
 const operationTitle = selectElement("#titre");
 const operationDescription = selectElement("#desc");
@@ -105,7 +111,7 @@ operationForm.addEventListener("submit", (e) => {
 
   //// DOM creation of the whole HTML operation blocks with dynamic values \\\\
 
-  // TODO : try to shorten the code with element.clodeNode() ?
+  // TODO : inject directly html code in a innerHTML
 
   const mainDiv = document.createElement("div");
   gridOperationContainer.appendChild(mainDiv);
@@ -159,20 +165,23 @@ operationForm.addEventListener("submit", (e) => {
   amountValue.innerHTML = `${addSpaceInNumber(operationAmount.value)}€`;
 
   let amountPercent = document.createElement("small");
+  let convertToAbsoluteNum = Math.abs(balanceArray[balanceArray.length - 1]);
+  console.log(operationAmount.value);
+  console.log(convertToAbsoluteNum);
+
   amountCell.appendChild(amountPercent);
   amountPercent.innerHTML = `${(
-    (parseInt(operationAmount.value) / balanceArray[balanceArray.length - 1]) *
+    (parseInt(operationAmount.value) / convertToAbsoluteNum) *
     100
   ).toFixed(2)}%`;
 
-  // update the balance array for graphic use
-  operationTypeSelector.value === "credit"
-    ? balanceArray.push(
-        balanceArray[balanceArray.length - 1] + parseInt(operationAmount.value)
-      )
-    : balanceArray.push(
-        balanceArray[balanceArray.length - 1] - parseInt(operationAmount.value)
-      );
+  // update graphic
+  let operationNumber = balanceArray.length;
+  let newSold =
+    operationTypeSelector.value === "credit"
+      ? balanceArray[balanceArray.length - 1] + parseInt(operationAmount.value)
+      : balanceArray[balanceArray.length - 1] - parseInt(operationAmount.value);
+  addSold(operationNumber, newSold);
 
   // dynamic update of current balance
   let updatedBalance = balanceArray[balanceArray.length - 1].toFixed(2);
@@ -198,7 +207,6 @@ operationForm.addEventListener("submit", (e) => {
   operationTypeSelector.value = "--";
 
   inputs.forEach((input) => {
-    console.log(input);
     input.value = "";
   });
 });

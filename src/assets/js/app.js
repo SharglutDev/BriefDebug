@@ -1,4 +1,4 @@
-console.log("Bijour Bank !");
+// console.log("Bijour Bank !");
 /**
  * init foundation
  */
